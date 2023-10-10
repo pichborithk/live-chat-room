@@ -6,8 +6,44 @@ const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  // const navigate = useNavigate();
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    if (!username || !password) return;
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/users/register`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+        }
+      );
+      const result = await response.json();
+      if (result.error) {
+        console.log(result.error);
+        return;
+      }
+      console.log(result);
+      // navigate('/');
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setUsername('');
+      setPassword('');
+    }
+  }
+
   return (
-    <form className='flex flex-col items-center w-1/3 shadow-full gap-8 rounded-md py-8 px-12 justify-evenly bg-sky-600 text-slate-200 font-bold text-xl'>
+    <form
+      onSubmit={handleSubmit}
+      className='flex flex-col items-center w-1/3 shadow-full gap-8 rounded-md py-8 px-12 justify-evenly bg-sky-600 text-slate-200 font-bold text-xl'
+    >
       <h1 className='text-4xl font-bold'>Register</h1>
       <Input
         value={username}
