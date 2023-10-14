@@ -1,4 +1,6 @@
+from datetime import datetime, timedelta
 import bcrypt
+import jwt
 from flask import request, jsonify, abort
 from app import app, db
 from .models import User
@@ -35,7 +37,10 @@ def register():
     new_user = User(username=username, password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
-    response = Response(error=False, data={"message": "Success create new account"})
+    expiration = datetime.utcnow() + timedelta(seconds=120)
+    payload = {"username": username, "exp": expiration}
+    token = jwt.encode(payload=payload, key=app.config["SECRET_KEY"], algorithm="HS256")
+    response = Response(error=False, data={"message": "Success create new account", "token": token})
     return jsonify(response.__dict__)
 
 
