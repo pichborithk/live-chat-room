@@ -13,3 +13,9 @@ def handler_404(err):
 def handler_403(err):
     error = {"name": err.name, "message": err.description}
     return jsonify({"success": False, "error": error}), 403
+
+
+@app.errorhandler(401)
+def handler_401(err):
+    error = {"name": err.name, "message": err.description}
+    return jsonify({"success": False, "error": error}), 401
