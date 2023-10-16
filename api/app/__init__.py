@@ -15,4 +15,10 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DB_PATH")
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-from app.module.controllers import *
+
+@app.get("/ping")
+def ping():
+    return jsonify({"success": True, "data": {"message": "pong"}, "error": False})
+
+
+from app.controllers import *
