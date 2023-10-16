@@ -9,3 +9,7 @@ class Message(db.Model):
 
     sender_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     sender = relationship("User", back_populates="messages")
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()

@@ -5,6 +5,7 @@ from flask import request, jsonify, abort
 
 from app import app
 from app.models import User, Response
+from app.middleware.deserialize_auth import deserialize_auth
 
 
 @app.post("/api/users/register")
@@ -21,7 +22,7 @@ def register():
     new_user = User(username=username, password=hashed_password)
     new_user.save()
     expiration = datetime.utcnow() + timedelta(seconds=120)
-    payload = {"username": username, "exp": expiration}
+    payload = {"id": new_user.id, "username": username, "exp": expiration}
     token = jwt.encode(payload=payload, key=app.config["SECRET_KEY"], algorithm="HS256")
     response = Response(
         error=False, data={"message": "Success create new account", "token": token}
@@ -42,9 +43,21 @@ def login():
         abort(403, "Unauthorized")
 
     expiration = datetime.utcnow() + timedelta(seconds=120)
-    payload = {"username": username, "exp": expiration}
+    payload = {"id": user.id, "username": username, "exp": expiration}
     token = jwt.encode(payload=payload, key=app.config["SECRET_KEY"], algorithm="HS256")
     response = Response(
         error=False, data={"message": "Success create new account", "token": token}
+    )
+    return jsonify(response.__dict__)
+
+
+@app.get("/api/users/me")
+@deserialize_auth
+def get_user():
+    payload = get_user.auth_payload
+    user = User.get_user_by_id(payload["id"])
+    messages = [message.text for message in user.messages]
+    response = Response(
+        data={"id": user.id, "username": user.username, "messages": messages}
     )
     return jsonify(response.__dict__)
