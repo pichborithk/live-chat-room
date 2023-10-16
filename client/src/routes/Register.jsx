@@ -1,12 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Input } from '../components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 
 const Register = () => {
+  const { token, setToken } = useOutletContext();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (token) {
+      sessionStorage.setItem('TOKEN', token);
+      navigate('/chatroom');
+    }
+  }, [token]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -30,6 +38,7 @@ const Register = () => {
         return;
       }
       console.log(result);
+      setToken(result.data.token);
       // navigate('/');
     } catch (error) {
       console.error(error);
