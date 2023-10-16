@@ -22,7 +22,7 @@ class Message(db.Model):
             obj = {
                 "id": message.id,
                 "text": message.text,
-                "username": message.sender.username,
+                "sender": message.sender.username,
             }
             result.append(obj)
 
