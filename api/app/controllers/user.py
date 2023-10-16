@@ -56,8 +56,6 @@ def login():
 def get_user():
     payload = get_user.auth_payload
     user = User.get_user_by_id(payload["id"])
-    messages = [message.text for message in user.messages]
-    response = Response(
-        data={"id": user.id, "username": user.username, "messages": messages}
-    )
+    # messages = [message.text for message in user.messages]
+    response = Response(data={"id": user.id, "username": user.username})
     return jsonify(response.__dict__)
