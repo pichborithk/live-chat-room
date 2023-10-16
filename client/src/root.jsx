@@ -24,6 +24,7 @@ const Root = () => {
       const result = await response.json();
       if (result.error) {
         sessionStorage.clear();
+        setToken('');
         return;
       }
       console.log(result);
