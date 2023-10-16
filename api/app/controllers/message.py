@@ -15,7 +15,11 @@ def new_message():
     # print(message.sender, message.text)
     # print(type(message.sender.user))
     response = Response(
-        data={"message": message.text, "sender": message.sender.username}
+        data={
+            "id": message.id,
+            "text": message.text,
+            "sender": message.sender.username,
+        }
     )
     return jsonify(response.__dict__)
 
