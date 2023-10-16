@@ -36,5 +36,9 @@ class User(db.Model):
         return db.session.query(User)
 
     @staticmethod
+    def get_user_by_id(user_id):
+        return db.get_or_404(User, user_id, description="Invalid Information")
+
+    @staticmethod
     def get_user_by_username(username):
         return db.session.query(User).filter_by(username=username).first()
