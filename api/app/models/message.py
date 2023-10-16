@@ -13,3 +13,17 @@ class Message(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
+
+    @staticmethod
+    def get_all():
+        messages = db.session.query(Message)
+        result = []
+        for message in messages:
+            obj = {
+                "id": message.id,
+                "text": message.text,
+                "username": message.sender.username,
+            }
+            result.append(obj)
+
+        return result
