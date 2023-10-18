@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { MessageForm } from '../components';
+import { socket } from '../socket';
 
 const ChatRoom = () => {
   const { token, userData } = useOutletContext();
@@ -16,14 +17,38 @@ const ChatRoom = () => {
     }
   }, [token]);
 
+  useEffect(() => {
+    socket.connect();
+    console.log('Socket connected');
+    return () => {
+      socket.disconnect();
+      console.log('Socket disconnected');
+    };
+  }, []);
+
+  useEffect(() => {
+    function onMessageEvent(data) {
+      setMessages(prev => [...prev, data]);
+    }
+
+    socket.on('message', onMessageEvent);
+
+    return () => {
+      socket.off('message', onMessageEvent);
+    };
+  }, [messages]);
+
   async function getMessages() {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/messages`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/messages`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
       const result = await response.json();
       if (result.error) {
         console.log(result.error);

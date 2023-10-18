@@ -1,33 +1,42 @@
 /* eslint-disable react/prop-types */
 
 import { useState } from 'react';
+import { socket } from '../socket';
 
-const MessageForm = ({ token, setMessages }) => {
+const MessageForm = ({ token }) => {
   const [text, setText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
 
     if (!text) return;
 
+    setIsLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/messages`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/messages`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ text }),
+        }
+      );
 
       const result = await response.json();
       if (result.error) {
         console.log(result.error);
         return;
       }
-      console.log(result.data);
+      // console.log(result.data);
       setText('');
-      setMessages(prev => [...prev, result.data]);
+      // setMessages(prev => [...prev, result.data]);
+      socket.timeout(5000).emit('message', result.data, () => {
+        setIsLoading(false);
+      });
     } catch (error) {
       console.error(error);
     }
@@ -40,7 +49,7 @@ const MessageForm = ({ token, setMessages }) => {
         value={text}
         onChange={event => setText(event.target.value)}
       />
-      <button>
+      <button disabled={isLoading}>
         <i className='fa-solid fa-paper-plane text-2xl hover:text-3xl'></i>
       </button>
     </form>
