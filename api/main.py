@@ -1,4 +1,6 @@
-from app import app
+from app import app, socketio
 
 if __name__ == "__main__":
-    app.run(host="localhost", debug=True, port=1337)
+    socketio.run(
+        app, host="localhost", debug=True, port=1337, allow_unsafe_werkzeug=True
+    )
