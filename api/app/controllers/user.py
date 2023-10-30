@@ -42,7 +42,7 @@ def login():
     if not bcrypt.checkpw(byte_password, user.password):
         abort(403, "Unauthorized")
 
-    expiration = datetime.utcnow() + timedelta(seconds=120)
+    expiration = datetime.utcnow() + timedelta(days=1)
     payload = {"id": user.id, "username": username, "exp": expiration}
     token = jwt.encode(payload=payload, key=app.config["SECRET_KEY"], algorithm="HS256")
     response = Response(
