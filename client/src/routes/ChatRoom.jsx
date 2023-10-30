@@ -66,10 +66,10 @@ const ChatRoom = () => {
     }
 
     return (
-        <div className='shadow-full w-full p-4 flex flex-col gap-2 max-h-screen min-h-screen'>
+        <div className='shadow-full w-full p-4 flex flex-col gap-2 max-h-full min-h-full pt-16'>
             <h1 className='text-center text-4xl font-bold'>ChatRoom</h1>
             <div
-                className='flex flex-col w-full flex-1 gap-2 py-4 overflow-y-scroll'
+                className='flex flex-col w-full flex-1 gap-2 py-2 overflow-y-scroll'
                 id='messages'
             >
                 <div className='flex flex-col justify-end gap-2 px-2 flex-1'>
