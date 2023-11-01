@@ -29,7 +29,7 @@ const router = createBrowserRouter([
             { path: 'profile', element: <Profile /> },
             { path: 'login', element: <Login /> },
             { path: 'register', element: <Register /> },
-            { path: 'chatroom', element: <ChatRoom /> },
+            { path: 'chatroom/:roomCode', element: <ChatRoom /> },
         ],
     },
 ]);
