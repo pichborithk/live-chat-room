@@ -10,7 +10,7 @@ class User(db.Model, Base):
 
     messages = relationship("Message", back_populates="sender")
 
-    rooms = relationship("UserRoom", back_populates="users")
+    user_rooms = relationship("UserRoom", back_populates="user")
 
     def __init__(self, username, password):
         self.username = username
@@ -26,6 +26,13 @@ class User(db.Model, Base):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+    def get_all_room_code(self):
+        result = []
+        for user_room in self.user_rooms:
+            result.append(user_room.room.code)
+
+        return result
 
     @staticmethod
     def get_all():

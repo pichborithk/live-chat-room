@@ -4,7 +4,7 @@ from flask import request, jsonify, abort
 
 from app import app
 from app.models import Room, Response, UserRoom
-from app.middleware.deserialize_auth import deserialize_auth
+from app.middleware.auth import deserialize_auth, verification_user_in_room
 
 
 def generate_unique_code(length):
@@ -22,11 +22,21 @@ def generate_unique_code(length):
 
 @app.post("/api/rooms/create")
 @deserialize_auth
-def create_room():
-    payload = create_room.auth_payload
+def create_room(current_user):
+    # payload = create_room.auth_payload
     room_code = generate_unique_code(4)
     new_room = Room(code=room_code)
     new_room.save()
-    user_room_connect = UserRoom(user_id=payload["id"], room_id=new_room.id)
+    user_room_connect = UserRoom(user_id=current_user["id"], room_id=new_room.id)
     user_room_connect.save()
+    response = Response(data={"code": room_code})
+    return jsonify(response.__dict__)
+
+
+@app.get("/api/rooms/<string:room_code>")
+@deserialize_auth
+@verification_user_in_room
+def get_room(room_code):
+    room = Room.get_room_by_code(room_code)
+    print(room.messages)
     return jsonify({"message": "success"})
