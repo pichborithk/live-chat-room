@@ -36,7 +36,8 @@ def create_room(current_user):
 @app.get("/api/rooms/<string:room_code>")
 @deserialize_auth
 @verification_user_in_room
-def get_room(room_code):
+def get_room(current_user, room_code):
     room = Room.get_room_by_code(room_code)
-    print(room.messages)
-    return jsonify({"message": "success"})
+    messages = room.get_all_messages()
+    response = Response(data=messages)
+    return jsonify(response.__dict__)

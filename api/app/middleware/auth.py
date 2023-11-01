@@ -37,8 +37,8 @@ def verification_user_in_room(func):
         if room_code not in rooms:
             abort(401, "Unauthorized")
 
-        print("User may enter this room")
+        # print("User may enter this room")
 
-        return func(room_code, *args, **kwargs)
+        return func(current_user, room_code, *args, **kwargs)
 
     return decorated_function

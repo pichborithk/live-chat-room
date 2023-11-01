@@ -26,6 +26,18 @@ class Room(db.Model, Base):
         db.session.delete(self)
         db.session.commit()
 
+    def get_all_messages(self):
+        result = []
+        for message in self.messages:
+            obj = {
+                "id": message.id,
+                "text": message.text,
+                "sender": message.sender.username,
+            }
+            result.append(obj)
+
+        return result
+
     @staticmethod
     def get_all_code():
         rooms = db.session.query(Room).all()
