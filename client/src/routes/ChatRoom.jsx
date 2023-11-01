@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { MessageForm } from '../components';
 import { socket } from '../socket';
 
@@ -7,6 +7,7 @@ const ChatRoom = () => {
     const { token, userData } = useOutletContext();
     const [messages, setMessages] = useState([]);
 
+    const { roomCode } = useParams();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -43,7 +44,7 @@ const ChatRoom = () => {
     async function getMessages() {
         try {
             const response = await fetch(
-                `${import.meta.env.VITE_API_URL}/api/messages`,
+                `${import.meta.env.VITE_API_URL}/api/rooms/${roomCode}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -58,7 +59,7 @@ const ChatRoom = () => {
                 return;
             }
             console.log(result);
-            setMessages(result.data.messages);
+            setMessages(result.data);
             // navigate('/');
         } catch (error) {
             console.error(error);
@@ -66,14 +67,14 @@ const ChatRoom = () => {
     }
 
     return (
-        <div className='shadow-full w-full p-4 flex flex-col gap-2 max-h-full min-h-full pt-16'>
+        <div className='shadow-full w-full p-4 flex flex-col gap-2 max-h-screen min-h-screen pt-16'>
             <h1 className='text-center text-4xl font-bold'>ChatRoom</h1>
             <div
-                className='flex flex-col w-full flex-1 gap-2 py-2 overflow-y-scroll'
+                className='flex flex-col w-full flex-1 gap-2 py-2 overflow-y-auto'
                 id='messages'
             >
                 <div className='flex flex-col justify-end gap-2 px-2 flex-1'>
-                    {messages.map(message => (
+                    {messages?.map(message => (
                         <div
                             key={message.id}
                             className={`flex gap-1 items-center ${
@@ -92,7 +93,7 @@ const ChatRoom = () => {
                     ))}
                 </div>
             </div>
-            <MessageForm token={token} setMessages={setMessages} />
+            <MessageForm token={token} roomCode={roomCode} />
         </div>
     );
 };
