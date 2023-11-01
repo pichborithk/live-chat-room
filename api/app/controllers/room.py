@@ -3,7 +3,7 @@ from string import ascii_uppercase
 from flask import request, jsonify, abort
 
 from app import app
-from app.models import Room, Response, UserRoom
+from app.models import Room, Response, UserRoom, User
 from app.middleware.auth import deserialize_auth, verification_user_in_room
 
 
@@ -38,6 +38,27 @@ def create_room(current_user):
 @verification_user_in_room
 def get_room(current_user, room_code):
     room = Room.get_room_by_code(room_code)
+    if not room:
+        abort(403, f"Room with code {room_code} do not exist")
+
+    messages = room.get_all_messages()
+    response = Response(data=messages)
+    return jsonify(response.__dict__)
+
+
+@app.post("/api/rooms/join/<string:room_code>")
+@deserialize_auth
+def join_room(current_user, room_code):
+    room = Room.get_room_by_code(room_code)
+    if not room:
+        abort(403, f"Room with code {room_code} do not exist")
+
+    user = User.get_user_by_id(current_user["id"])
+    rooms = user.get_all_room_code()
+    if room_code not in rooms:
+        user_room_connect = UserRoom(user_id=current_user["id"], room_id=room.id)
+        user_room_connect.save()
+
     messages = room.get_all_messages()
     response = Response(data=messages)
     return jsonify(response.__dict__)
