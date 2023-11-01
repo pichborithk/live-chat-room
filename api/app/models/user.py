@@ -1,14 +1,16 @@
-from app import db
+from app import db, Base
 from sqlalchemy.orm import relationship
 
 
-class User(db.Model):
+class User(db.Model, Base):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(250), nullable=False)
 
     messages = relationship("Message", back_populates="sender")
+
+    rooms = relationship("UserRoom", back_populates="users")
 
     def __init__(self, username, password):
         self.username = username
@@ -33,7 +35,7 @@ class User(db.Model):
         #     obj = {"id": user.id, "username": user.username}
         #     result.append(obj)
         # return result
-        return db.session.query(User)
+        return db.session.query(User).all()
 
     @staticmethod
     def get_user_by_id(user_id):
