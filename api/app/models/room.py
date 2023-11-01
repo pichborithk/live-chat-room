@@ -10,7 +10,7 @@ class Room(db.Model, Base):
 
     messages = relationship("Message", back_populates="room")
 
-    users = relationship("UserRoom", back_populates="rooms")
+    room_users = relationship("UserRoom", back_populates="room")
 
     def __init__(self, code):
         self.code = code
@@ -38,6 +38,6 @@ class Room(db.Model, Base):
     # def get_user_by_id(user_id):
     #     return db.get_or_404(User, user_id, description="Invalid Information")
     #
-    # @staticmethod
-    # def get_user_by_username(username):
-    #     return db.session.query(User).filter_by(username=username).first()
+    @staticmethod
+    def get_room_by_code(code):
+        return db.session.query(Room).filter_by(code=code).first()
