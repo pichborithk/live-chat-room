@@ -17,14 +17,29 @@ def register():
         abort(403, f"User with name {username} already exist")
 
     password = request.json.get("password")
-    byte_password = bytes(str(password), "utf-8")
+    byte_password = bytes(password, "utf-8")
     hashed_password = bcrypt.hashpw(password=byte_password, salt=bcrypt.gensalt(8))
     new_user = User(username=username, password=hashed_password)
     new_user.save()
+
     expiration = datetime.utcnow() + timedelta(days=1)
-    payload = {"id": new_user.id, "username": username, "exp": expiration}
-    token = jwt.encode(payload=payload, key=app.config["SECRET_KEY"], algorithm="HS256")
-    response = Response(data={"message": "Success create new account", "token": token})
+    payload = {
+        "id": new_user.id,
+        "username": username,
+        "exp": expiration,
+    }
+    token = jwt.encode(
+        payload=payload,
+        key=app.config["SECRET_KEY"],
+        algorithm="HS256",
+    )
+
+    response = Response(
+        data={
+            "message": "Success create new account",
+            "token": token,
+        }
+    )
     return jsonify(response.__dict__)
 
 
@@ -46,8 +61,18 @@ def login():
         "username": username,
         "exp": expiration,
     }
-    token = jwt.encode(payload=payload, key=app.config["SECRET_KEY"], algorithm="HS256")
-    response = Response(data={"message": "Success create new account", "token": token})
+    token = jwt.encode(
+        payload=payload,
+        key=app.config["SECRET_KEY"],
+        algorithm="HS256",
+    )
+
+    response = Response(
+        data={
+            "message": "Success create new account",
+            "token": token,
+        }
+    )
     return jsonify(response.__dict__)
 
 
