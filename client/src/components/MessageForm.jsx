@@ -33,8 +33,8 @@ const MessageForm = ({ token, roomCode }) => {
             }
             // console.log(result.data);
             setText('');
-            // setMessages(prev => [...prev, result.data]);
-            socket.timeout(5000).emit('message', result.data, () => {
+            const data = { message: result.data, room: roomCode };
+            socket.timeout(5000).emit('message', data, () => {
                 setIsLoading(false);
             });
         } catch (error) {
