@@ -20,8 +20,11 @@ const ChatRoom = () => {
 
     useEffect(() => {
         socket.connect();
+        socket.emit('join', { room: roomCode });
         console.log('Socket connected');
+
         return () => {
+            socket.emit('leave', { room: roomCode });
             socket.disconnect();
             console.log('Socket disconnected');
         };
@@ -56,9 +59,10 @@ const ChatRoom = () => {
             if (result.error) {
                 console.log(result.error);
                 sessionStorage.clear();
+                navigate('/');
                 return;
             }
-            console.log(result);
+            // console.log(result);
             setMessages(result.data);
             // navigate('/');
         } catch (error) {

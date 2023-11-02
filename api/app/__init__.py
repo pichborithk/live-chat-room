@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from sqlalchemy.ext.declarative import declarative_base
 from flask_migrate import Migrate
-from flask_socketio import SocketIO, send, emit
+from flask_socketio import SocketIO, send, emit, join_room, leave_room
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -27,16 +27,30 @@ def ping():
     return jsonify({"success": True, "data": {"message": "pong"}, "error": False})
 
 
+@socketio.on("join")
+def join_event(data):
+    room_code = data["room"]
+    join_room(room_code)
+
+
+@socketio.on("leave")
+def join_event(data):
+    room_code = data["room"]
+    print("leave")
+    leave_room(room_code)
+
+
 @socketio.on("message")
-def message(data):
+def message_event(data):
     content = {
-        "id": data["id"],
-        "text": data["text"],
-        "sender": data["sender"],
+        "id": data["message"]["id"],
+        "text": data["message"]["text"],
+        "sender": data["message"]["sender"],
     }
-    emit("message", content, broadcast=True)
-    # rooms[room_code]["messages"].append(content)
-    print(f"{data['sender']} said: {data['text']}")
+    room_code = data["room"]
+    # emit("message", content, broadcast=True)
+    send(content, to=room_code)
+    print(f"{data['message']['sender']} said: {data['message']['text']}")
 
 
 from app.controllers import *

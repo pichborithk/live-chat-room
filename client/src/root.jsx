@@ -31,7 +31,7 @@ const Root = () => {
                 setToken('');
                 return;
             }
-            console.log(result);
+            // console.log(result);
             setUserData(result.data);
         } catch (error) {
             console.error('Catch error on fetchUserData', error);
